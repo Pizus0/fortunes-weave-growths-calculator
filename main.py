@@ -21,3 +21,4 @@ cldata = [td.get_text(strip=True) for td in clsoup.find_all("td")]
 
 print(characters["Eshmel"]["HP"])
 print(characters["Leda"])
+print(characters["Cai"])
