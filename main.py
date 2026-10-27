@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup # parses the data
 import requests # fetches the data
-from tkinter import *
+import tkinter as tk
 
 growths = requests.get("https://serenesforest.net/fortunes-weave/characters/growth-rates/") # gets the character growths
 soup = BeautifulSoup(growths.text, "html.parser") # grabs the entire website
@@ -29,11 +29,62 @@ def combine(characters: dict, classes: dict) -> dict: # combines characters and 
     return {k: characters.get(k, 0) + classes.get(k, 0)for k in keys}
 
 
-window = Tk() # creates a window
+window = tk.Tk() # creates a window
 
 window.geometry("420x420")
 window.title("Fortunes Weave Growth Checker")
 window.config(background="#363636")
-entry = Entry(window, font=("Arial", 50), width = 30)
-entry.pack()
+
+title = tk.Label(
+    window,
+    text="Character Growths",
+    font=("Arial", 18, "bold"),
+    foreground="white",
+    background="#363636",
+)
+title.pack(pady=(24, 12))
+
+name_entry = tk.Entry(window, font=("Arial", 14), width=28)
+name_entry.pack(padx=20, pady=8)
+name_entry.focus_set()
+
+growths_label = tk.Label(
+    window,
+    text="Enter a character name to see their growths.",
+    font=("Arial", 12),
+    foreground="white",
+    background="#363636",
+    justify=tk.LEFT,
+    anchor="nw",
+    wraplength=360,
+)
+growths_label.pack(fill=tk.BOTH, expand=True, padx=30, pady=20)
+
+
+def show_growths(event=None) -> None:
+    name = name_entry.get().strip()
+    if not name:
+        growths_label.config(text="Enter a character name to see their growths.")
+        return
+
+    character_growths = characters.get(name)
+    if character_growths is None:
+        growths_label.config(text=f"No character named '{name}' was found.")
+        return
+
+    growth_list = "\n".join(
+        f"{stat}: {growth}%" for stat, growth in character_growths.items()
+    )
+    growths_label.config(text=f"{name}\n\n{growth_list}")
+
+
+search_button = tk.Button(
+    window,
+    text="Show Growths",
+    command=show_growths,
+    font=("Arial", 12),
+)
+search_button.pack(pady=(0, 20))
+name_entry.bind("<Return>", show_growths)
+
 window.mainloop() # summons window
